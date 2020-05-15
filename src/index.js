@@ -1,23 +1,36 @@
-import React from "react";
+import React, { Component } from "react";
 import ReactDOM from "react-dom";
-import faker from "faker";
 
-import Comment from "./commentComponent";
-import ApprovelCard from "./approvalCard";
-const App = () => {
-  return (
-    <div className="ui container comments">
-      <ApprovelCard >
-      <Comment date={faker.date.past().toDateString()} name={faker.name.firstName()} comment={faker.lorem.lines()} />
-      </ApprovelCard>
-      <ApprovelCard>
-      <Comment date={faker.date.past().toDateString()} name={faker.name.firstName()} comment={faker.lorem.lines()} />
-      </ApprovelCard>
-      <ApprovelCard>
-      <Comment date={faker.date.past().toDateString()} name={faker.name.firstName()} comment={faker.lorem.lines()}/>
-      </ApprovelCard>
-    </div>
-  );
-};
+import SeasonDisplay from "./SeasonDisplay";
+import Spinner from "./spinner";
+
+class App extends Component {
+  
+  state = {
+    lat: null,
+    errMassage : ""
+  };
+    
+  componentDidMount(){
+    window.navigator.geolocation.getCurrentPosition(
+      (position) => {
+        this.setState({lat : position.coords.latitude})
+      },
+      (err) => {
+        this.setState({errMassage : err.message})
+         }
+    )
+  }
+
+  render() {
+   if(this.state.errMassage){
+   return <div> Error : {this.state.errMassage}</div>;
+   }
+   if(this.state.lat){
+    return <SeasonDisplay lat= {this.state.lat} />
+    }
+  return <Spinner massage = "Please accept the location request"/>
+  }
+}
 
 ReactDOM.render(<App />, document.querySelector("#root"));
